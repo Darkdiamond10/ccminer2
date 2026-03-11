@@ -99,6 +99,11 @@ AC_SUBST(PTHREAD_FLAGS)
 AC_SUBST(PTHREAD_LIBS)
 AC_SUBST(WS2_LIBS)
 
+# Use our locally built minimal static curl, and ensure OpenSSL and zlib are linked statically.
+# -Wl,-Bstatic tells the linker to look for .a archives, and -Wl,-Bdynamic restores dynamic linking for libc etc.
+LIBCURL_STATIC="-L\$(top_srcdir)/curl-static/lib -Wl,-Bstatic -lcurl -lssl -lcrypto -lz -Wl,-Bdynamic"
+AC_SUBST(LIBCURL_STATIC)
+
 AC_CONFIG_FILES([
 	Makefile
 	compat/Makefile

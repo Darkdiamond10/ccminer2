@@ -14,6 +14,9 @@ rm -f Makefile.in
 rm -f config.status
 ./autogen.sh || echo done
 
+# Build minimal static curl before configuring
+./build-libcurl.sh
+
 # CFLAGS="-O2" ./configure
 ./configure.sh
 
