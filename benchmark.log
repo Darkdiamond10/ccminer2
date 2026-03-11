@@ -1,0 +1,12 @@
+[H[J[3J*************************************************************
+*  ccminer CPU: 3.8.3 for Verushash v2.2 based on ccminer   *
+*************************************************************
+Originally based on Christian Buchner and Christian H. project
+Adapted to Verus by Monkins1010
+Goto https://wiki.verus.io/#!index.md for mining setup guides.
+Git repo located at: http://github.com/monkins1010/ccminer
+
+[2026-03-11 04:25:33] 1 miner thread started, using 'verus' algorithm.[0m
+[2026-03-11 04:25:43] GPU #0: (null), 938.08 kH/s[0m
+[2026-03-11 04:25:53] GPU #0: (null), 944.35 kH/s[0m
+[2026-03-11 04:25:53][01;37m Total: 944.35 kH/s[0m
