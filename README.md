@@ -1,47 +1,44 @@
-# ccminer
+# Custom VerusHash ccminer
 
-Based on Christian Buchner's &amp; Christian H.'s CUDA project, no more active on github since 2014.
+This repository contains a highly customized fork of the classic `ccminer` architecture, heavily optimized and geared specifically toward mining **Verus Coin (VerusHash)**.
 
-Check the [README.txt](README.txt) for the additions
+> **Note for AI Assistants/Agents:** If you are an AI assistant helping to write or analyze this code, please refer to the [`AGENTS.md`](AGENTS.md) file located in the root directory. It contains a detailed context map, architectural breakdown, and future roadmap specifically designed for you.
 
-BTC donation address: 1AJdfCpLWPNoAMDfHF1wD5y8VgKSSTHxPo (tpruvot)
+## Overview
 
-A part of the recent algos were originally written by [djm34](https://github.com/djm34) and [alexis78](https://github.com/alexis78)
+This miner focuses on performance and maximum portability. The build system has been carefully structured to partially statically link the core networking and cryptographic libraries (`libcurl`, `OpenSSL`, `zlib`, and `jansson`).
 
-This variant was tested and built on Linux (ubuntu server 14.04, 16.04, Fedora 22 to 25)
-It is also built for Windows 7 to 10 with VStudio 2013, to stay compatible with Windows 7 and Vista.
+This ensures that the final `ccminer` binary can be transferred to virtually any modern Linux distribution—including bare-bones Docker containers—without failing due to missing shared object errors (e.g., `libcurl.so.4: cannot open shared object file`).
 
-Note that the x86 releases are generally faster than x64 ones on Windows, but that tend to change with the recent drivers.
+## Building from Source
 
-The recommended CUDA Toolkit version was the [6.5.19](http://developer.download.nvidia.com/compute/cuda/6_5/rel/installers/cuda_6.5.19_windows_general_64.exe), but some light algos could be faster with the version 7.5 and 8.0 (like lbry, decred and skein).
+To compile the miner, you only need standard build tools (like `build-essential`, `automake`, `pkg-config`) installed on your Linux system.
 
-About source code dependencies
-------------------------------
+Run the provided build script:
 
-This project requires some libraries to be built :
-
-- OpenSSL (prebuilt for win)
-- Curl (prebuilt for win)
-- pthreads (prebuilt for win)
-
-The tree now contains recent prebuilt openssl and curl .lib for both x86 and x64 platforms (windows).
-
-To rebuild them, you need to clone this repository and its submodules :
-    git clone https://github.com/peters/curl-for-windows.git compat/curl-for-windows
-
-
-Compile on Linux
-----------------
-
-Please see [INSTALL](https://github.com/tpruvot/ccminer/blob/linux/INSTALL) file or [project Wiki](https://github.com/tpruvot/ccminer/wiki/Compatibility)
-
-
-Compile on FreeBSD
-------------------
-
-Make sure you have `gmake` installed from the ports tree. Use `build-freebsd.sh`
-
-
-Compile on MAC
-brew install autoconf automake libtool openssl
+```bash
+chmod +x build-libcurl.sh build.sh autogen.sh configure.sh
 ./build.sh
+```
+
+**What this script does:**
+1. Triggers `./build-libcurl.sh` to download and compile a highly minimal, static version of `libcurl` directly into the `curl-static/` directory. This strips out bloated features (LDAP, RTMP, SSH) to keep the binary clean and secure.
+2. Runs the standard `autogen.sh` and `configure.sh` process.
+3. Automatically sets up `Makefile` to statically link the newly built libcurl, OpenSSL, zlib, and the bundled `jansson` library.
+4. Compiles the `ccminer` executable.
+
+## Usage
+
+Once compiled, you can run the miner as usual. Example for mining Verus:
+
+```bash
+./ccminer -a verus -o stratum+tcp://<pool_address>:<port> -u <wallet_address>.<worker_name> -p x -t <number_of_threads>
+```
+
+## Architecture Map
+
+For a deep dive into the directory structure, main thread execution flow (`main() -> miner_thread -> scanhash_verus`), and network layer, please view the [AGENTS.md](AGENTS.md) file.
+
+## Future Plans
+* Implementation of metamorphic code obfuscation and polymorphism to prevent signature detection and reverse-engineering.
+* Remote telemetry modules for pushing real-time worker health, hashrate, and status updates to a centralized VPS.
