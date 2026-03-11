@@ -32,8 +32,11 @@ endif
 
 ccminer_LDFLAGS  = $(PTHREAD_FLAGS)
 
-ccminer_LDADD    = -lcurl @JANSSON_LIBS@ @PTHREAD_LIBS@ @WS2_LIBS@ @OPENMP_CFLAGS@ @LIBS@
-ccminer_CPPFLAGS = @OPENMP_CFLAGS@ $(CPPFLAGS) $(PTHREAD_FLAGS) -march=native -fno-strict-aliasing $(JANSSON_INCLUDES) $(DEF_INCLUDES) -O3
+# We filter out standard -lcurl etc from @LIBS@ in a way that doesn't upset automake
+# Wait, autotools doesn't like backticks or fancy sed in _LDADD variables. Let's just use @LIBS@.
+# We'll just put LIBCURL_STATIC first so it takes precedence over any generic -lcurl in LIBS.
+ccminer_LDADD    = @LIBCURL_STATIC@ @JANSSON_LIBS@ @PTHREAD_LIBS@ @WS2_LIBS@ @OPENMP_CFLAGS@ @LIBS@
+ccminer_CPPFLAGS = @OPENMP_CFLAGS@ $(CPPFLAGS) $(PTHREAD_FLAGS) -march=native -fno-strict-aliasing $(JANSSON_INCLUDES) -I$(top_srcdir)/curl-static/include $(DEF_INCLUDES) -O3
 
 
 if HAVE_OSX

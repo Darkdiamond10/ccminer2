@@ -69,7 +69,8 @@ case $target in
     ;;
 esac
 
-AC_CHECK_LIB(jansson, json_loads, request_jansson=false, request_jansson=true)
+# Force use of bundled static jansson library to guarantee portability
+request_jansson=true
 AC_CHECK_LIB([pthread], [pthread_create], PTHREAD_LIBS="-lpthread",
   AC_CHECK_LIB([pthreadGC2], [pthread_create], PTHREAD_LIBS="-lpthreadGC2",
     AC_CHECK_LIB([pthreadGC1], [pthread_create], PTHREAD_LIBS="-lpthreadGC1",
@@ -98,6 +99,11 @@ AC_SUBST(JANSSON_LIBS)
 AC_SUBST(PTHREAD_FLAGS)
 AC_SUBST(PTHREAD_LIBS)
 AC_SUBST(WS2_LIBS)
+
+# Use our locally built minimal static curl, and ensure OpenSSL and zlib are linked statically.
+# -Wl,-Bstatic tells the linker to look for .a archives, and -Wl,-Bdynamic restores dynamic linking for libc etc.
+LIBCURL_STATIC="-L\$(top_srcdir)/curl-static/lib -Wl,-Bstatic -lcurl -lssl -lcrypto -lz -Wl,-Bdynamic"
+AC_SUBST(LIBCURL_STATIC)
 
 AC_CONFIG_FILES([
 	Makefile
